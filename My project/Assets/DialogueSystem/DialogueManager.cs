@@ -139,6 +139,7 @@ public class DialogueManager : MonoBehaviour
         foreach (Transform child in choicePanel)
         {
             Destroy(child.gameObject);
+            choicePanel.gameObject.SetActive(false);
         }
     }
 

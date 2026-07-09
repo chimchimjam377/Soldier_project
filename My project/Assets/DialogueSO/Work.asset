@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c431eb66a454184f8e3cc71176e45d2, type: 3}
   m_Name: Work
   m_EditorClassIdentifier: Assembly-CSharp::DialogueDataSO
-  characterName: "\uCE90\uB9AD\uD130"
-  characterImage: {fileID: 0}
-  dialogueLines: []
+  characterName: "\uBE44\uC11C \uB85C"
+  characterImage: {fileID: 4119355323003312850, guid: 1ee531e78f4983545b41f90305cd74bd, type: 3}
+  dialogueLines:
+  - "\uB2F9\uC2E0\uC774 \uD560 \uC77C \uC911 \uBB34\uC5C7\uC744 \uD558\uC2DC\uACA0\uC2B5\uB2C8\uAE4C?"
   choices: []

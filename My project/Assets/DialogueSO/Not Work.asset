@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Not Work
   m_EditorClassIdentifier: Assembly-CSharp::DialogueDataSO
   characterName: "\uCE90\uB9AD\uD130"
-  characterImage: {fileID: 0}
-  dialogueLines: []
+  characterImage: {fileID: 4119355323003312850, guid: 1ee531e78f4983545b41f90305cd74bd, type: 3}
+  dialogueLines:
+  - "\uC54C\uACA0\uC2B5\uB2C8\uB2E4.\n"
   choices: []

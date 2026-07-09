@@ -20,6 +20,6 @@ MonoBehaviour:
   - "\uB2F9\uC2E0\uC758 \uC77C\uC744 \uD558\uC2DC\uACA0\uC2B5\uB2C8\uAE4C?\n"
   choices:
   - choiceText: "\uC77C\uC744 \uD55C\uB2E4"
-    nextDialogue: {fileID: 0}
+    nextDialogue: {fileID: 11400000, guid: fee51a5a4de538147a8229f4727e7fb9, type: 2}
   - choiceText: "\uC77C\uC744 \uC548\uD55C\uB2E4"
-    nextDialogue: {fileID: 0}
+    nextDialogue: {fileID: 11400000, guid: e961cb7632013674daa84fa7ba5583e2, type: 2}
