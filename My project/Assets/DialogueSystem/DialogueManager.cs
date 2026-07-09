@@ -10,7 +10,9 @@ public class DialogueManager : MonoBehaviour
     public TextMeshProUGUI characterNameText;                //캐릭터 이름 표시하는 텍스트
     public TextMeshProUGUI dialogueText;                     //대화 내용을 표시하는 텍스트
     public Button nextButton;                                //다음 대화 버튼
-    //public Button optionButtonPrefab;                            //대화 선택지 버튼 프리팹
+   
+    public Button optionButtonPrefab;                        //대화 선택지 버튼 프리팹
+    public Transform choicePanel;                            //선택지 버튼들이 생성될 부모 패널
 
     [Header("기본 설정")]
     public Sprite defaultCharacterImage;                     //캐릭터 이미지가 없을때 사용 할 기본 이미지
@@ -25,6 +27,8 @@ public class DialogueManager : MonoBehaviour
     private bool isDialogueActive = false;                   //대화가 진행 중인지 확인하는 플래그
     private bool isTyping = false;                           //현재 타이핑 효과가 진행 중인지 확인
     private Coroutine typingCoroutine;                       //타이핑 효과 코루틴 등록
+
+    private bool isWaitingForChoice = false;                 //선택지를 기다리는 중인지 확인
 
     IEnumerator TypeText(string textToType)                  //타이핑 할 전체 텍스트
     {
@@ -76,14 +80,65 @@ public class DialogueManager : MonoBehaviour
     {
         currentLineIndex++;                                  //다음 줄로 인덱스 증가
 
-        //마지막 대화 였는지 확인
+        //마지막 대화 였는지 확인 후 분기 처리
         if (currentLineIndex >= currentDialogue.dialogueLines.Count)
         {
-            EndDialogue();
+            //선택지가 존재한다면 선택지 팝업, 없다면 대화 종료
+            if(currentDialogue.choices != null && currentDialogue.choices.Count > 0)
+            {
+                ShowChoices();
+            }
+            else
+            {
+                EndDialogue();
+            }
         }
         else
         {
-            ShowCurrentLine();                               //대화가 남아있으면 다음 줄 표시
+            ShowCurrentLine();
+        }
+    }
+
+    void ShowChoices()
+    {
+        choicePanel.gameObject.SetActive(true);
+        isWaitingForChoice = true;                          //입력 대기 상태로 전환
+        nextButton.gameObject.SetActive(false);             //선택지 도중 스킵이나 다음으로 넘어가지 못하도록 버튼 숨김
+        
+        foreach (var choice in currentDialogue.choices)
+        {
+            //프리팹 생성 및 부모 설정
+            Button btn = Instantiate(optionButtonPrefab, choicePanel);
+
+            //텍스트 설정
+            btn.GetComponentInChildren<TextMeshProUGUI>().text = choice.choiceText;
+
+            //버튼 클릭 이벤트 연결 (클릭 시 OnChoiceSelected 실행)
+            btn.onClick.AddListener(() => OnChoiceSelected(choice.nextDialogue));
+        }
+    }
+
+    void OnChoiceSelected(DialogueDataSO nextDialogue)
+    {
+        ClearChoices();                                     //눌렀으니 생성된 버튼들 파괴
+        isWaitingForChoice = false;                         //대기 상태 해제
+        nextButton.gameObject.SetActive(true);              //다음 버튼 다시 활성화
+
+        if (nextDialogue != null)
+        {
+            StartDialogue(nextDialogue);                    //연결된 다음 대화 시작
+        }
+        else
+        {
+            EndDialogue();                                  //연결된 대화가 없으면 종료
+        }
+    }
+
+    void ClearChoices()
+    {
+        foreach (Transform child in choicePanel)
+        {
+            Destroy(child.gameObject);
         }
     }
 
@@ -97,12 +152,16 @@ public class DialogueManager : MonoBehaviour
 
         isDialogueActive = false;                           //대화 비활성화
         isTyping = false;                                   //타이핑 상태 해제
+        isWaitingForChoice = false;                         //상태 초기화
         DialoguePanel.SetActive(false);                     //대화창 숨기기
         currentLineIndex = 0;                               //인덱스 초기화
+        ClearChoices();                                     //혹시 남아있을 수 있는 대화 삭제
     }
 
     public void HandleNextInput()
     {
+        if (isWaitingForChoice) return;                     //선택지 고르는 중에는 다음버튼 비활성화
+
         if (isTyping && skipTypingOnClick)                  //타이핑 중이라면 즉시 완료
         {
             CompleteTyping();
@@ -131,9 +190,11 @@ public class DialogueManager : MonoBehaviour
         currentDialogue = dialogue;                         //현재 대화 데이터 설정
         currentLineIndex = 0;                               //첫 번째 대화 부터 시작
         isDialogueActive = true;                            //대화 활성화 플래그 on
+        isWaitingForChoice = false;                         //시작할 때 대기 상태 비활성화
 
         //UI 업데이트
         DialoguePanel.SetActive(true);                      //대화창 보이기
+        nextButton.gameObject.SetActive(true);              //다음 버튼 활성화
         characterNameText.text = dialogue.characterName;    //캐릭터 이름 표시
 
         if (characterImage != null)
@@ -151,17 +212,16 @@ public class DialogueManager : MonoBehaviour
         ShowCurrentLine();                                                //첫 번째 대화 내용 표시
     }
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
        DialoguePanel.SetActive(false);                                    //대화창 숨기기
        nextButton.onClick.AddListener(HandleNextInput);                   //다음 버튼에 새로운 입력 처리 연결
     }
 
-    // Update is called once per frame
+    
     void Update()
     {
-        if (isDialogueActive && Input.GetKeyDown(KeyCode.Space))
+        if (isDialogueActive && !isWaitingForChoice && Input.GetKeyDown(KeyCode.Space))
         {
             HandleNextInput();                                             //다음 입력 처리 (타이핑 중이면 완료, 아니면 다음줄)
         }

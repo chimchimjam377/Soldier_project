@@ -10,10 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6c431eb66a454184f8e3cc71176e45d2, type: 3}
-  m_Name: DialogueDataSO 1
+  m_Name: Not Work
   m_EditorClassIdentifier: Assembly-CSharp::DialogueDataSO
   characterName: "\uCE90\uB9AD\uD130"
-  characterImage: {fileID: 4119355323003312850, guid: 1ee531e78f4983545b41f90305cd74bd, type: 3}
-  dialogueLines:
-  - "\uBB50 \uC528\uBC1C"
-  - "\uAEBC\uC838\uB77C"
+  characterImage: {fileID: 0}
+  dialogueLines: []
+  choices: []
